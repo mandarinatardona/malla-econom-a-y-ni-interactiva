@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Interactiva Negocios Internacionales</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>Malla Interactiva Negocios Internacionales</h1>
+  <div id="malla"></div>
+  <button id="add-subject">Agregar materia</button>
+  <div id="info-box" class="hidden"></div>
+  <script src="main.js"></script>
+</body>
+</html>
+body {
+  font-family: Arial, sans-serif;
+  margin: 30px;
+  background: #f5f5fa;
+}
+h1 {
+  text-align: center;
+}
+.ciclo {
+  margin: 35px 0 18px 0;
+}
+.ciclo-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: #5e2e8c;
+  margin-bottom: 10px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  justify-items: center;
+}
+.cell {
+  background: #8d4fc7;
+  color: white;
+  border: 2px solid #5e2e8c;
+  border-radius: 10px;
+  padding: 14px 14px 34px 14px;
+  min-height: 80px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(90, 40, 160, 0.07);
+  transition: box-shadow 0.2s;
+}
+.cell:hover {
+  box-shadow: 0 4px 18px rgba(90, 40, 160, 0.12);
+  background: #a975d6;
+}
+.delete-btn {
+  position: absolute;
+  top: 7px;
+  right: 10px;
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 16px;
+  cursor: pointer;
+}
+#info-box {
+  margin-top: 20px;
+  background: #fff0fb;
+  border: 1px solid #d1a3e7;
+  border-radius: 10px;
+  padding: 16px;
+  max-width: 350px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #5e2e8c;
+  box-shadow: 0 2px 6px rgba(90, 40, 160, 0.06);
+}
+.hidden {
+  display: none;
+}
+#add-subject {
+  margin: 30px auto 0 auto;
+  display: block;
+  background: #8d4fc7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#add-subject:hover {
+  background: #a975d6;
+}
+const mallaData = [
+  {
+    ciclo: 'I Ciclo',
+    materias: [
+      { nombre: "Comunicación I" },
+      { nombre: "Administración y Gestión" },
+      { nombre: "Introducción a los negocios internacionales" },
+      { nombre: "Sociedades y tributaciones" },
+      { nombre: "Metodología del aprendizaje" },
+      { nombre: "Matemática I" }
+    ]
+  },
+  {
+    ciclo: 'II Ciclo',
+    materias: [
+      { nombre: "Historia económica del Perú y el mundo" },
+      { nombre: "Matemática para economista I", prerequisitos: ["Matemática I"] },
+      { nombre: "Introducción a la economía", prerequisitos: ["Matemática I"] },
+      { nombre: "Recursos digitales" },
+      { nombre: "Filosofía y pensamiento crítico" },
+      { nombre: "Comunicación II", prerequisitos: ["Comunicación I"] }
+    ]
+  },
+  {
+    ciclo: 'III Ciclo',
+    materias: [
+      { nombre: "Marketing Internacional" },
+      { nombre: "Matemática para economistas II", prerequisitos: ["Matemática para economista I"] },
+      { nombre: "Microeconomía", prerequisitos: ["Introducción a la economía"] },
+      { nombre: "Matemática Aplicada a los Negocios", prerequisitos: ["Matemática para economista I"] },
+      { nombre: "Fundamentos de contabilidad", prerequisitos: ["Sociedades y tributaciones"] }
+    ]
+  },
+  {
+    ciclo: 'IV Ciclo',
+    materias: [
+      { nombre: "Microeconomía Avanzada", prerequisitos: ["Microeconomía"] },
+      { nombre: "Macroeconomía", prerequisitos: ["Microeconomía"] },
+      { nombre: "Sistema de Costos y Presupuestos", prerequisitos: ["Fundamentos de contabilidad"] },
+      { nombre: "Investigación de Mercados Internacionales", prerequisitos: ["Marketing Internacional"] },
+      { nombre: "Ética, Ciudadanía e Inclusión Social", prerequisitos: ["Filosofía y pensamiento crítico"] },
+      { nombre: "Vigencia y Trascendencia del Pensamiento de Antenor Orrego" },
+      { nombre: "Estadística Aplicada a los Negocios", prerequisitos: ["Matemática Aplicada a los Negocios"] }
+    ]
+  },
+  {
+    ciclo: 'V Ciclo',
+    materias: [
+      { nombre: "Estadística para la Toma de Decisiones", prerequisitos: ["Estadística Aplicada a los Negocios"] },
+      { nombre: "Economía Pública", prerequisitos: ["Macroeconomía"] },
+      { nombre: "Gestión de Operaciones", prerequisitos: ["Sistema de Costos y Presupuestos"] },
+      { nombre: "Macroeconomía Avanzada", prerequisitos: ["Macroeconomía"] },
+      { nombre: "Finanzas", prerequisitos: ["Sistema de Costos y Presupuestos", "Matemática Aplicada a los Negocios"] },
+      { nombre: "Medio Ambiente y Desarrollo Sostenible" }
+    ]
+  },
+  {
+    ciclo: 'VI Ciclo',
+    materias: [
+      { nombre: "Metodología de la Investigación Científica" },
+      { nombre: "Finanzas Corporativas", prerequisitos: ["Finanzas"] },
+      { nombre: "Global Supply Chain Management", prerequisitos: ["Gestión de Operaciones"] },
+      { nombre: "Economía Internacional", prerequisitos: ["Macroeconomía"] },
+      { nombre: "Taller de Creatividad, Innovación y Emprendimiento", prerequisitos: ["Investigación de Mercados Internacionales"] },
+      { nombre: "Econometría I", prerequisitos: ["Estadística para la Toma de Decisiones"] },
+      { nombre: "Economía de la Regulación y Competencia", prerequisitos: ["Microeconomía Avanzada"] }
+    ]
+  },
+  {
+    ciclo: 'VII Ciclo',
+    materias: [
+      { nombre: "Innovación Estratégica y Modelos de Negocios", prerequisitos: ["Taller de Creatividad, Innovación y Emprendimiento"] },
+      { nombre: "Gestión Pública", prerequisitos: ["Economía de la Regulación y Competencia"] },
+      { nombre: "Comercio Exterior", prerequisitos: ["Economía Internacional"] },
+      { nombre: "Gestión Aduanera", prerequisitos: ["Global Supply Chain Management"] },
+      { nombre: "Negociaciones Comerciales y Regulación Internacional", prerequisitos: ["Global Supply Chain Management"] },
+      { nombre: "Finanzas Internacionales y Administración de Riesgos", prerequisitos: ["Finanzas Corporativas"] },
+      { nombre: "Econometría II", prerequisitos: ["Econometría I"] },
+      { nombre: "Deontología Profesional" }
+    ]
+  },
+  {
+    ciclo: 'VIII Ciclo',
+    materias: [
+      { nombre: "Elaboración y Evaluación de Proyectos de Inversión", prerequisitos: ["Innovación Estratégica y Modelos de Negocios"] },
+      { nombre: "Inversiones Internacionales y Mercado de Capitales", prerequisitos: ["Finanzas Internacionales y Administración de Riesgos"] },
+      { nombre: "Inteligencia Competitiva y Geo Económica", prerequisitos: ["Comercio Exterior"] },
+      { nombre: "Proyecto de Investigación", prerequisitos: ["Metodología de la Investigación Científica"] },
+      { nombre: "Sistemas de Información Estratégica", prerequisitos: ["Innovación Estratégica y Modelos de Negocios"] },
+      { nombre: "Teoría y Política Monetaria", prerequisitos: ["Macroeconomía Avanzada"] },
+      { nombre: "Electivos (2): Comercio Exterior de Servicios, Desarrollo Ágil de Productos" }
+    ]
+  },
+  {
+    ciclo: 'IX Ciclo',
+    materias: [
+      { nombre: "Deontología Profesional", prerequisitos: ["Metodología de la Investigación Científica"] },
+      { nombre: "Política Económica", prerequisitos: ["Teoría y Política Monetaria"] },
+      { nombre: "Estrategias de Internacionalización", prerequisitos: ["Negociaciones Comerciales y Regulación Internacional", "Inteligencia Competitiva y Geo Económica"] },
+      { nombre: "Tesis I", prerequisitos: ["Proyecto de Investigación"] },
+      { nombre: "International Business Plan", prerequisitos: ["Innovación Estratégica y Modelos de Negocios"] },
+      { nombre: "Dirección de Empresas Multinacionales", prerequisitos: ["Sistemas de Información Estratégica"] },
+      { nombre: "Electivos (2): Comercio Electrónico B2C, Microfinanzas y Negocios Internacionales" }
+    ]
+  },
+  {
+    ciclo: 'X Ciclo',
+    materias: [
+      { nombre: "International Business Analytic", prerequisitos: ["International Business Plan"] },
+      { nombre: "Consultoría en Economía y Negocios Internacionales", prerequisitos: ["Estrategias de Internacionalización", "Política Económica"] },
+      { nombre: "Práctica Pre Profesional", prerequisitos: ["Tesis I"] },
+      { nombre: "Tesis II", prerequisitos: ["Tesis I"] },
+      { nombre: "Electivos (2): Tópicos Avanzados de Comercio Exterior y Aduanas, Tópicos de Finanzas Avanzadas" }
+    ]
+  }
+];
+
+const mallaDiv = document.getElementById('malla');
+const infoBox = document.getElementById('info-box');
+const addBtn = document.getElementById('add-subject');
+
+function renderMalla() {
+  mallaDiv.innerHTML = '';
+  mallaData.forEach((cicloObj, cicloIdx) => {
+    const cicloSection = document.createElement('div');
+    cicloSection.className = 'ciclo';
+    const cicloTitle = document.createElement('div');
+    cicloTitle.className = 'ciclo-title';
+    cicloTitle.textContent = cicloObj.ciclo;
+    cicloSection.appendChild(cicloTitle);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    cicloObj.materias.forEach((materia, matIdx) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = materia.nombre;
+
+      // Eliminar materia
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '×';
+      deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        mallaData[cicloIdx].materias.splice(matIdx, 1);
+        renderMalla();
+        infoBox.classList.add('hidden');
+      };
+      cell.appendChild(deleteBtn);
+
+      // Info materia
+      cell.onclick = () => {
+        let html = `<strong>${materia.nombre}</strong>`;
+        if (materia.prerequisitos && materia.prerequisitos.length > 0) {
+          html += `<br><b>Prerrequisitos:</b> ${materia.prerequisitos.join(', ')}`;
+        } else {
+          html += `<br><i>Sin prerrequisitos</i>`;
+        }
+        infoBox.innerHTML = html;
+        infoBox.classList.remove('hidden');
+      };
+
+      grid.appendChild(cell);
+    });
+
+    cicloSection.appendChild(grid);
+    mallaDiv.appendChild(cicloSection);
+  });
+}
+
+// Agregar materia
+addBtn.onclick = () => {
+  const ciclo = prompt("¿A qué ciclo pertenece la materia? (por ejemplo: III Ciclo)");
+  if (!ciclo) return;
+  const nombre = prompt("Nombre de la materia:");
+  if (!nombre) return;
+  const prereq = prompt("Prerrequisitos (separados por coma, opcional):");
+  const obj = { nombre };
+  if (prereq) {
+    obj.prerequisitos = prereq.split(",").map(x => x.trim()).filter(x => x);
+  }
+  // Buscar ciclo y agregar
+  let cicloObj = mallaData.find(c => c.ciclo.toLowerCase() === ciclo.toLowerCase());
+  if (!cicloObj) {
+    cicloObj = { ciclo, materias: [obj] };
+    mallaData.push(cicloObj);
+  } else {
+    cicloObj.materias.push(obj);
+  }
+  renderMalla();
+};
+
+renderMalla(); 
